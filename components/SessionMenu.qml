@@ -17,52 +17,61 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import QtQuick 2.2
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+import QtQuick 6.2
+import QtQuick.Controls 6.2
 
-ToolButton {
+Button {
     id: root
 
     property int currentIndex: -1
     property int rootFontSize
     property string rootFontColor
 
-    visible: menu.items.length > 1
+    visible: menu.count > 1
 
     opacity: root.activeFocus ? 1 : 0.5
-
-    style: ButtonStyle {
-        label: Label {
-            id: buttonLabel
-            color: rootFontColor
-            font.pointSize: rootFontSize
-            renderType: Text.QtRendering
-            text: instantiator.objectAt(currentIndex).text || ""
-            font.underline: root.activeFocus
-        }
-        background: Rectangle {
-            color: "transparent"
-        }
+    
+    flat: true
+    
+    contentItem: Label {
+        id: buttonLabel
+        color: rootFontColor
+        font.pointSize: rootFontSize
+        renderType: Text.QtRendering
+        text: instantiator.objectAt(currentIndex) ? instantiator.objectAt(currentIndex).text : ""
+        font.underline: root.activeFocus
+    }
+    
+    background: Rectangle {
+        color: "transparent"
     }
 
     Component.onCompleted: {
         currentIndex = sessionModel.lastIndex
     }
 
-    menu: Menu {
+    Menu {
         id: menu
+        
+        y: parent.height
+        
         Instantiator {
             id: instantiator
             model: sessionModel
-            onObjectAdded: menu.insertItem(index, object)
-            onObjectRemoved: menu.removeItem( object )
             delegate: MenuItem {
                 text: model.name
                 onTriggered: {
                     root.currentIndex = model.index
                 }
             }
+            function onObjectAdded(index, object) {
+                menu.insertItem(index, object);
+            }
+            function onObjectRemoved(object) {
+                menu.removeItem(object);
+            }
         }
     }
+    
+    onClicked: menu.open()
 }

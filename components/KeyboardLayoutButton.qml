@@ -17,9 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import QtQuick 2.2
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+import QtQuick 6.2
+import QtQuick.Controls 6.2
 
 Button {
     id: keyboardLayoutButton
@@ -28,28 +27,30 @@ Button {
 
     visible: keyboard.layouts.length > 1
 
-    style: ButtonStyle {
-        label: Image {
-            id: buttonLabel
-            source: "../assets/keyboard.svgz"
-            fillMode: Image.PreserveAspectFit
-            transform: Translate { x: 5 }
-            smooth: false
-        }
-        background: Rectangle {
-            radius: 3
-            color: keyboardLayoutButton.activeFocus ? "white" : "transparent"
-            opacity: keyboardLayoutButton.activeFocus ? 0.3 : 1
-        }
+    flat: true
+    
+    contentItem: Image {
+        id: buttonLabel
+        source: "../assets/keyboard.svgz"
+        fillMode: Image.PreserveAspectFit
+        x: 5
+        smooth: false
+    }
+    
+    background: Rectangle {
+        radius: 3
+        color: keyboardLayoutButton.activeFocus ? "white" : "transparent"
+        opacity: keyboardLayoutButton.activeFocus ? 0.3 : 1
     }
 
-    menu: Menu {
+    Menu {
         id: keyboardLayoutMenu
+        
+        y: parent.height
+        
         Instantiator {
             id: instantiator
             model: keyboard.layouts
-            onObjectAdded: keyboardLayoutMenu.insertItem(index, object)
-            onObjectRemoved: keyboardLayoutMenu.removeItem( object )
             delegate: MenuItem {
                 text: modelData.longName
                 property string shortName: modelData.shortName
@@ -57,8 +58,16 @@ Button {
                     keyboard.currentLayout = model.index
                 }
             }
+            function onObjectAdded(index, object) {
+                keyboardLayoutMenu.insertItem(index, object);
+            }
+            function onObjectRemoved(object) {
+                keyboardLayoutMenu.removeItem(object);
+            }
         }
     }
+    
+    onClicked: keyboardLayoutMenu.open()
 
     Component.onCompleted: currentIndex = Qt.binding(function() {
         return keyboard.currentLayout

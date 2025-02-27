@@ -18,10 +18,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import QtQuick 2.2
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+import QtQuick 6.2
+import QtQuick.Layouts 6.2
+import QtQuick.Controls 6.2
 
 LoginFormLayout {
 
@@ -51,20 +50,19 @@ LoginFormLayout {
             onAccepted: startLogin()
         	focus: true
 
-            font.pointSize: usernameFontSize * 0.9
+            font.pointSize: Math.max(1, usernameFontSize * 0.9)
             implicitWidth: root.width / 5
             implicitHeight: usernameFontSize * 2.75
             opacity: 0.5
 
-            style: TextFieldStyle {
-                textColor: passwordFieldOutlined ? "white" : "black"
-                placeholderTextColor: passwordFieldOutlined ? "white" : "black"
-                background: Rectangle {
-                    radius: 3
-                    border.color: "white"
-                    border.width: 1
-                    color: passwordFieldOutlined ? "transparent" : "white"
-                }
+            color: passwordFieldOutlined ? "white" : "black"
+            placeholderTextColor: passwordFieldOutlined ? "white" : "black"
+            
+            background: Rectangle {
+                radius: 3
+                border.color: "white"
+                border.width: 1
+                color: passwordFieldOutlined ? "transparent" : "white"
             }
 
         	Keys.onEscapePressed: {
@@ -93,9 +91,9 @@ LoginFormLayout {
 
             Connections {
                 target: sddm
-                onLoginFailed: {
-                    passwordField.selectAll()
-                    passwordField.forceActiveFocus()
+                function onLoginFailed() {
+                    passwordField.selectAll();
+                    passwordField.forceActiveFocus();
                 }
             }
         }

@@ -19,9 +19,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import QtQuick 2.2
-import QtQuick.Controls 1.4
-import QtGraphicalEffects 1.0
+import QtQuick 6.2
+import QtQuick.Controls 6.2
+import Qt5Compat.GraphicalEffects
 
 Item {
     id: wrapper
@@ -84,7 +84,7 @@ Item {
 
         color: usernameFontColor
         font.capitalization: Font.Capitalize
-        font.pointSize: usernameFontSize * 1.2
+        font.pointSize: Math.max(1, usernameFontSize * 1.2)
         renderType: Text.QtRendering
         anchors.top: imageSource.bottom
         anchors.horizontalCenter: parent.horizontalCenter

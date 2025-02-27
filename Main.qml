@@ -18,9 +18,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import QtQuick 2.2
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.1
+import QtQuick 6.2
+import QtQuick.Controls 6.2
+import QtQuick.Layouts 6.2
 import SddmComponents 2.0
 
 import "components"
@@ -33,7 +33,7 @@ Rectangle {
 
     property string notificationMessage
     property string generalFontColor: "white"
-    property int generalFontSize: config.FontPointSize ? config.FontPointSize : root.height / 80
+    property int generalFontSize: config.FontPointSize ? parseInt(config.FontPointSize) : Math.max(1, root.height / 80)
 
     TextConstants { id: textConstants }
 
@@ -117,7 +117,7 @@ Rectangle {
                 lastUserName: userModel.lastUser
                 usernameFontSize: root.generalFontSize
                 usernameFontColor: root.generalFontColor
-                faceSize: config.AvatarPixelSize ? config.AvatarPixelSize : root.width / 15
+                faceSize: config.AvatarPixelSize ? parseInt(config.AvatarPixelSize) : root.width / 15
 
                 showUserList: {
                     if ( !userListModel.hasOwnProperty("count") || !userListModel.hasOwnProperty("disableAvatarsThreshold") )
@@ -139,21 +139,21 @@ Rectangle {
                         text: config.translationSuspend ? config.translationSuspend : "Suspend"
                         onClicked: sddm.suspend()
                         enabled: sddm.canSuspend
-                        iconSize: root.generalFontSize * 3
+                        iconSize: Math.max(1, root.generalFontSize * 3)
                     },
                     ActionButton {
                         iconSource: "assets/reboot.svgz"
                         text: config.translationReboot ? config.translationReboot : textConstants.reboot
                         onClicked: sddm.reboot()
                         enabled: sddm.canReboot
-                        iconSize: root.generalFontSize * 3
+                        iconSize: Math.max(1, root.generalFontSize * 3)
                     },
                     ActionButton {
                         iconSource: "assets/shutdown.svgz"
                         text: config.translationPowerOff ? config.translationPowerOff : textConstants.shutdown
                         onClicked: sddm.powerOff()
                         enabled: sddm.canPowerOff
-                        iconSize: root.generalFontSize * 3
+                        iconSize: Math.max(1, root.generalFontSize * 3)
                     }
                 ]
 
@@ -184,10 +184,7 @@ Rectangle {
                 }
             }
             source: "components/VirtualKeyboard.qml"
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
+            Layout.fillWidth: true
 
             function showHide() {
                 state = state == "hidden" ? "visible" : "hidden";
@@ -302,8 +299,8 @@ Rectangle {
 
         Connections {
             target: sddm
-            onLoginFailed: {
-                notificationMessage = textConstants.loginFailed
+            function onLoginFailed() {
+                notificationMessage = textConstants.loginFailed;
                 notificationResetTimer.start();
             }
         }
