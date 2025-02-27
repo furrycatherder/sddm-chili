@@ -135,21 +135,21 @@ Rectangle {
 
                 actionItems: [
                     ActionButton {
-                        iconSource: "assets/suspend.svgz"
+                        iconSource: "../assets/suspend.svgz"
                         text: config.translationSuspend ? config.translationSuspend : "Suspend"
                         onClicked: sddm.suspend()
                         enabled: sddm.canSuspend
                         iconSize: Math.max(1, root.generalFontSize * 3)
                     },
                     ActionButton {
-                        iconSource: "assets/reboot.svgz"
+                        iconSource: "../assets/reboot.svgz"
                         text: config.translationReboot ? config.translationReboot : textConstants.reboot
                         onClicked: sddm.reboot()
                         enabled: sddm.canReboot
                         iconSize: Math.max(1, root.generalFontSize * 3)
                     },
                     ActionButton {
-                        iconSource: "assets/shutdown.svgz"
+                        iconSource: "../assets/shutdown.svgz"
                         text: config.translationPowerOff ? config.translationPowerOff : textConstants.shutdown
                         onClicked: sddm.powerOff()
                         enabled: sddm.canPowerOff
