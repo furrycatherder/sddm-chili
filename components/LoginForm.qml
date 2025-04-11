@@ -35,6 +35,10 @@ LoginFormLayout {
         var password = passwordField.text
         loginRequest(username, password);
     }
+    
+    Component.onCompleted: {
+        passwordField.forceActiveFocus()
+    }
 
     RowLayout {
 

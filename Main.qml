@@ -111,6 +111,7 @@ Rectangle {
 
             initialItem: LoginForm {
                 id: userListComponent
+                focus: true
 
                 userListModel: userModel
                 userListCurrentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
