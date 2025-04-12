@@ -66,7 +66,7 @@ LoginFormLayout {
             Keys.onEscapePressed: {
                 loginFormStack.currentItem.forceActiveFocus();
             }
-            Keys.onPressed: {
+            Keys.onPressed: function (event) {
                 if (event.key == Qt.Key_Left && !text) {
                     userList.decrementCurrentIndex();
                     event.accepted = true;

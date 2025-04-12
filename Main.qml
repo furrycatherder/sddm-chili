@@ -159,7 +159,7 @@ Rectangle {
                     }
                 ]
 
-                onLoginRequest: {
+                onLoginRequest: function (username, password) {
                     root.notificationMessage = "";
                     sddm.login(username, password, sessionMenu.currentIndex);
                 }
