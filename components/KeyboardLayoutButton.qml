@@ -25,52 +25,54 @@ Button {
 
     property int currentIndex
 
+    flat: true
     visible: keyboard.layouts.length > 1
 
-    flat: true
-    
-    contentItem: Image {
-        id: buttonLabel
-        source: "../assets/keyboard.svgz"
-        fillMode: Image.PreserveAspectFit
-        x: 5
-        smooth: false
-    }
-    
     background: Rectangle {
-        radius: 3
         color: keyboardLayoutButton.activeFocus ? "white" : "transparent"
         opacity: keyboardLayoutButton.activeFocus ? 0.3 : 1
+        radius: 3
     }
+    contentItem: Image {
+        id: buttonLabel
+
+        fillMode: Image.PreserveAspectFit
+        smooth: false
+        source: "../assets/keyboard.svgz"
+        x: 5
+    }
+
+    Component.onCompleted: currentIndex = Qt.binding(function () {
+        return keyboard.currentLayout;
+    })
+    onClicked: keyboardLayoutMenu.open()
 
     Menu {
         id: keyboardLayoutMenu
-        
+
         y: parent.height
-        
+
         Instantiator {
             id: instantiator
-            model: keyboard.layouts
-            delegate: MenuItem {
-                text: modelData.longName
-                property string shortName: modelData.shortName
-                onTriggered: {
-                    keyboard.currentLayout = model.index
-                }
-            }
+
             function onObjectAdded(index, object) {
                 keyboardLayoutMenu.insertItem(index, object);
             }
             function onObjectRemoved(object) {
                 keyboardLayoutMenu.removeItem(object);
             }
+
+            model: keyboard.layouts
+
+            delegate: MenuItem {
+                property string shortName: modelData.shortName
+
+                text: modelData.longName
+
+                onTriggered: {
+                    keyboard.currentLayout = model.index;
+                }
+            }
         }
     }
-    
-    onClicked: keyboardLayoutMenu.open()
-
-    Component.onCompleted: currentIndex = Qt.binding(function() {
-        return keyboard.currentLayout
-    });
-
 }

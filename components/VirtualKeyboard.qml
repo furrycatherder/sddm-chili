@@ -20,14 +20,16 @@ import QtQuick 6.2
 
 Item {
     id: inputPanel
+
     property bool activated: false
     property bool active: activated && Qt.inputMethod.visible
+
+    height: 200
     visible: active
     width: parent.width
-    height: 200
-    
+
     Rectangle {
-        color: "transparent"
         anchors.fill: parent
+        color: "transparent"
     }
 }

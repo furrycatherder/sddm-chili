@@ -23,67 +23,57 @@ import QtQuick 6.2
 ListView {
     id: view
 
-    readonly property string selectedUser: currentItem ? currentItem.userName : ""
-    readonly property int userItemWidth: root.width / 10
-    readonly property int userItemHeight: avatarSize + passwordField.height / 2
-
-    property int rootFontSize
-    property string rootFontColor
     property int avatarSize
+    property string rootFontColor
+    property int rootFontSize
+    readonly property string selectedUser: currentItem ? currentItem.userName : ""
+    readonly property int userItemHeight: avatarSize + passwordField.height / 2
+    readonly property int userItemWidth: root.width / 10
 
-    implicitHeight: userItemHeight
+    signal userSelected
 
-    activeFocusOnTab : true
-
-    signal userSelected;
-
-    orientation: ListView.Horizontal
+    activeFocusOnTab: true
     highlightRangeMode: ListView.StrictlyEnforceRange
-
+    implicitHeight: userItemHeight
+    orientation: ListView.Horizontal
     preferredHighlightBegin: width / 2 - userItemWidth / 2
     preferredHighlightEnd: preferredHighlightBegin
 
     delegate: UserDelegate {
-        
         avatarPath: model.icon || ""
-        usernameFontSize : rootFontSize
-        usernameFontColor: rootFontColor
+        constrainText: ListView.view.count > 1
         faceSize: avatarSize
-
+        height: userItemHeight
+        isCurrent: ListView.isCurrentItem
         name: {
-            var displayName = model.realName || model.name
+            var displayName = model.realName || model.name;
 
             if (model.vtNumber === undefined || model.vtNumber < 0) {
-                return displayName
+                return displayName;
             }
 
             if (!model.session) {
-                return "Nobody logged in on that session", "Unused"
+                return "Nobody logged in on that session", "Unused";
             }
 
-            var location = ""
+            var location = "";
 
             if (model.isTty) {
-                location = "User logged in on console number", "TTY %1", model.vtNumber
+                location = "User logged in on console number", "TTY %1", model.vtNumber;
             } else if (model.displayNumber) {
-                location = "User logged in on console (X display number)", "on TTY %1 (Display %2)", model.vtNumber, model.displayNumber
+                location = "User logged in on console (X display number)", "on TTY %1 (Display %2)", model.vtNumber, model.displayNumber;
             }
 
             if (location) {
-                return "Username (location)", "%1 (%2)", displayName, location
+                return "Username (location)", "%1 (%2)", displayName, location;
             }
 
-            return displayName
+            return displayName;
         }
-
         userName: model.name
-
+        usernameFontColor: rootFontColor
+        usernameFontSize: rootFontSize
         width: userItemWidth
-        height: userItemHeight
-
-        constrainText: ListView.view.count > 1
-
-        isCurrent: ListView.isCurrentItem
 
         onClicked: {
             ListView.view.currentIndex = index;
@@ -91,7 +81,7 @@ ListView {
         }
     }
 
-    Keys.onEscapePressed: view.userSelected()
     Keys.onEnterPressed: view.userSelected()
+    Keys.onEscapePressed: view.userSelected()
     Keys.onReturnPressed: view.userSelected()
 }

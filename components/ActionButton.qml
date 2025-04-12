@@ -25,78 +25,79 @@ import QtQuick.Layouts 6.2
 Item {
     id: root
 
-    Layout.alignment: Qt.AlignHCenter
-
-    property alias text: label.text
-    property alias iconSource: icon.source
     property alias font: label.font
+    property int iconSize
+    property alias iconSource: icon.source
+    property alias text: label.text
+
     signal clicked
 
+    Accessible.name: label.text
+    Accessible.role: Accessible.Button
+    Layout.alignment: Qt.AlignHCenter
     activeFocusOnTab: true
-    property int iconSize
+    implicitHeight: Math.max(icon.implicitHeight + label.height * 2, label.height)
+    implicitWidth: Math.max(icon.implicitWidth, label.contentWidth)
     opacity: activeFocus ? 1 : 0.6
 
-    implicitWidth: Math.max(icon.implicitWidth, label.contentWidth)
-    implicitHeight: Math.max(icon.implicitHeight + label.height * 2, label.height)
-
-    Image {
-        id: icon
-
-        anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
-        }
-        width: config.PowerIconSize || iconSize
-        height: config.PowerIconSize || iconSize
-    }
-
-    Label {
-        id: label
-
-        font.pointSize: Math.max(1, iconSize / 3)
-        renderType: Text.QtRendering
-        anchors {
-            top: icon.bottom
-            left: parent.left
-            right: parent.right
-            topMargin: label.height / 2
-        }
-        horizontalAlignment: Text.AlignHCenter
-        wrapMode: Text.WordWrap
-        color: "white"
-        font.underline: root.activeFocus
-    }
-    MouseArea {
-        id: mouseArea
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: root.clicked()
-        onEntered: fadeIn.start()
-        onExited: fadeOut.start()
-        anchors.fill: root
-    }
-
-    PropertyAnimation {
-        id: fadeIn
-        target: root
-        properties: "opacity"
-        to: 1
-        duration: 200
-    }
-
-     PropertyAnimation {
-        id: fadeOut
-        target: root
-        properties: "opacity"
-        to: 0.6
-        duration: 200
-    }
-
+    Accessible.onPressAction: clicked()
     Keys.onEnterPressed: clicked()
     Keys.onReturnPressed: clicked()
     Keys.onSpacePressed: clicked()
 
-    Accessible.onPressAction: clicked()
-    Accessible.role: Accessible.Button
-    Accessible.name: label.text
+    Image {
+        id: icon
+
+        height: config.PowerIconSize || iconSize
+        width: config.PowerIconSize || iconSize
+
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: parent.top
+        }
+    }
+    Label {
+        id: label
+
+        color: "white"
+        font.pointSize: Math.max(1, iconSize / 3)
+        font.underline: root.activeFocus
+        horizontalAlignment: Text.AlignHCenter
+        renderType: Text.QtRendering
+        wrapMode: Text.WordWrap
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: icon.bottom
+            topMargin: label.height / 2
+        }
+    }
+    MouseArea {
+        id: mouseArea
+
+        anchors.fill: root
+        cursorShape: Qt.PointingHandCursor
+        hoverEnabled: true
+
+        onClicked: root.clicked()
+        onEntered: fadeIn.start()
+        onExited: fadeOut.start()
+    }
+    PropertyAnimation {
+        id: fadeIn
+
+        duration: 200
+        properties: "opacity"
+        target: root
+        to: 1
+    }
+    PropertyAnimation {
+        id: fadeOut
+
+        duration: 200
+        properties: "opacity"
+        target: root
+        to: 0.6
+    }
 }

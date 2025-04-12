@@ -28,80 +28,80 @@ import "components"
 Rectangle {
     id: root
 
-    width: config.ScreenWidth
-    height: config.ScreenHeight
-
-    property string notificationMessage
     property string generalFontColor: "white"
     property int generalFontSize: config.FontPointSize ? parseInt(config.FontPointSize) : Math.max(1, root.height / 80)
+    property string notificationMessage
 
-    TextConstants { id: textConstants }
+    height: config.ScreenHeight
+    width: config.ScreenWidth
 
+    TextConstants {
+        id: textConstants
+
+    }
     Repeater {
         model: screenModel
+
         Wallpaper {
-            x: geometry.x
-            y: geometry.y
-            width: geometry.width
             height: geometry.height
             imageSource: config.background
+            width: geometry.width
+            x: geometry.x
+            y: geometry.y
         }
     }
-
     ColumnLayout {
         id: container
-        anchors.fill: parent
 
-        LayoutMirroring.enabled: Qt.locale().textDirection == Qt.RightToLeft
         LayoutMirroring.childrenInherit: true
+        LayoutMirroring.enabled: Qt.locale().textDirection == Qt.RightToLeft
+        anchors.fill: parent
 
         RowLayout {
             id: header
 
             Layout.alignment: Qt.AlignRight
             Layout.fillHeight: false
-            Layout.topMargin: generalFontSize
             Layout.rightMargin: generalFontSize * 1.5
+            Layout.topMargin: generalFontSize
 
             KeyboardLayoutButton {
-
                 Layout.topMargin: -1
-
                 implicitHeight: clockLabel.height * 1.2
                 implicitWidth: clockLabel.height * 1.8
-
             }
-
             Item {
                 id: clock
 
                 Layout.fillHeight: true
                 Layout.minimumWidth: clockLabel.width
 
+                Component.onCompleted: {
+                    clockLabel.updateTime();
+                }
+
                 Label {
                     id: clockLabel
+
+                    function updateTime() {
+                        text = new Date().toLocaleString(Qt.locale("en_US"), "ddd dd MMMM,  hh:mm A");
+                    }
+
                     color: generalFontColor
                     font.pointSize: root.generalFontSize
                     renderType: Text.QtRendering
-                    function updateTime() {
-                        text = new Date().toLocaleString(Qt.locale("en_US"), "ddd dd MMMM,  hh:mm A")
-                    }
                 }
                 Timer {
                     interval: 1000
                     repeat: true
                     running: true
+
                     onTriggered: {
-                        clockLabel.updateTime()
+                        clockLabel.updateTime();
                     }
-                }
-                Component.onCompleted: {
-                    clockLabel.updateTime()
                 }
             }
         }
-
-
         StackView {
             id: loginFormStack
 
@@ -111,109 +111,103 @@ Rectangle {
 
             initialItem: LoginForm {
                 id: userListComponent
-                focus: true
 
-                userListModel: userModel
-                userListCurrentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
-                lastUserName: userModel.lastUser
-                usernameFontSize: root.generalFontSize
-                usernameFontColor: root.generalFontColor
                 faceSize: config.AvatarPixelSize ? parseInt(config.AvatarPixelSize) : root.width / 15
-
-                showUserList: {
-                    if ( !userListModel.hasOwnProperty("count") || !userListModel.hasOwnProperty("disableAvatarsThreshold") )
-                        return (userList.y + loginFormStack.y) > 0
-                    if ( userListModel.count == 0 )
-                        return false
-                    return userListModel.count <= userListModel.disableAvatarsThreshold && (userList.y + loginFormStack.y) > 0
-                }
-
+                focus: true
+                lastUserName: userModel.lastUser
                 notificationMessage: {
-                    var text = ""
-                    text += root.notificationMessage
-                    return text
+                    var text = "";
+                    text += root.notificationMessage;
+                    return text;
                 }
+                showUserList: {
+                    if (!userListModel.hasOwnProperty("count") || !userListModel.hasOwnProperty("disableAvatarsThreshold"))
+                        return (userList.y + loginFormStack.y) > 0;
+                    if (userListModel.count == 0)
+                        return false;
+                    return userListModel.count <= userListModel.disableAvatarsThreshold && (userList.y + loginFormStack.y) > 0;
+                }
+                userListCurrentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
+                userListModel: userModel
+                usernameFontColor: root.generalFontColor
+                usernameFontSize: root.generalFontSize
 
                 actionItems: [
                     ActionButton {
-                        iconSource: "../assets/suspend.svgz"
-                        text: config.translationSuspend ? config.translationSuspend : "Suspend"
-                        onClicked: sddm.suspend()
                         enabled: sddm.canSuspend
                         iconSize: Math.max(1, root.generalFontSize * 3)
+                        iconSource: "../assets/suspend.svgz"
+                        text: config.translationSuspend ? config.translationSuspend : "Suspend"
+
+                        onClicked: sddm.suspend()
                     },
                     ActionButton {
-                        iconSource: "../assets/reboot.svgz"
-                        text: config.translationReboot ? config.translationReboot : textConstants.reboot
-                        onClicked: sddm.reboot()
                         enabled: sddm.canReboot
                         iconSize: Math.max(1, root.generalFontSize * 3)
+                        iconSource: "../assets/reboot.svgz"
+                        text: config.translationReboot ? config.translationReboot : textConstants.reboot
+
+                        onClicked: sddm.reboot()
                     },
                     ActionButton {
-                        iconSource: "../assets/shutdown.svgz"
-                        text: config.translationPowerOff ? config.translationPowerOff : textConstants.shutdown
-                        onClicked: sddm.powerOff()
                         enabled: sddm.canPowerOff
                         iconSize: Math.max(1, root.generalFontSize * 3)
+                        iconSource: "../assets/shutdown.svgz"
+                        text: config.translationPowerOff ? config.translationPowerOff : textConstants.shutdown
+
+                        onClicked: sddm.powerOff()
                     }
                 ]
 
                 onLoginRequest: {
-                    root.notificationMessage = ""
-                    sddm.login(username, password, sessionMenu.currentIndex)
+                    root.notificationMessage = "";
+                    sddm.login(username, password, sessionMenu.currentIndex);
                 }
             }
-
-
             Behavior on opacity {
                 OpacityAnimator {
                     duration: 150
                 }
             }
-
         }
-
         Loader {
             id: inputPanel
-            state: "hidden"
+
             property bool keyboardActive: item ? item.active : false
-            onKeyboardActiveChanged: {
-                if (keyboardActive) {
-                    state = "visible"
-                } else {
-                    state = "hidden";
-                }
-            }
-            source: "components/VirtualKeyboard.qml"
-            Layout.fillWidth: true
 
             function showHide() {
                 state = state == "hidden" ? "visible" : "hidden";
             }
 
+            Layout.fillWidth: true
+            source: "components/VirtualKeyboard.qml"
+            state: "hidden"
+
             states: [
                 State {
                     name: "visible"
+
                     PropertyChanges {
                         target: loginFormStack
                         y: Math.min(0, root.height - inputPanel.height - userListComponent.visibleBoundary)
                     }
                     PropertyChanges {
+                        opacity: 1
                         target: inputPanel
                         y: root.height - inputPanel.height
-                        opacity: 1
                     }
                 },
                 State {
                     name: "hidden"
+
                     PropertyChanges {
                         target: loginFormStack
                         y: 0
                     }
                     PropertyChanges {
-                        target: inputPanel
-                        y: root.height - root.height/4
                         opacity: 0
+                        target: inputPanel
+                        y: root.height - root.height / 4
                     }
                 }
             ]
@@ -221,6 +215,7 @@ Rectangle {
                 Transition {
                     from: "hidden"
                     to: "visible"
+
                     SequentialAnimation {
                         ScriptAction {
                             script: {
@@ -230,21 +225,21 @@ Rectangle {
                         }
                         ParallelAnimation {
                             NumberAnimation {
-                                target: loginFormStack
-                                property: "y"
                                 duration: units.longDuration
                                 easing.type: Easing.InOutQuad
+                                property: "y"
+                                target: loginFormStack
                             }
                             NumberAnimation {
-                                target: inputPanel
-                                property: "y"
                                 duration: units.longDuration
                                 easing.type: Easing.OutQuad
+                                property: "y"
+                                target: inputPanel
                             }
                             OpacityAnimator {
-                                target: inputPanel
                                 duration: units.longDuration
                                 easing.type: Easing.OutQuad
+                                target: inputPanel
                             }
                         }
                     }
@@ -252,24 +247,25 @@ Rectangle {
                 Transition {
                     from: "visible"
                     to: "hidden"
+
                     SequentialAnimation {
                         ParallelAnimation {
                             NumberAnimation {
-                                target: loginFormStack
-                                property: "y"
                                 duration: units.longDuration
                                 easing.type: Easing.InOutQuad
+                                property: "y"
+                                target: loginFormStack
                             }
                             NumberAnimation {
-                                target: inputPanel
-                                property: "y"
                                 duration: units.longDuration
                                 easing.type: Easing.InQuad
+                                property: "y"
+                                target: inputPanel
                             }
                             OpacityAnimator {
-                                target: inputPanel
                                 duration: units.longDuration
                                 easing.type: Easing.InQuad
+                                target: inputPanel
                             }
                         }
                         ScriptAction {
@@ -280,37 +276,44 @@ Rectangle {
                     }
                 }
             ]
-        }
 
+            onKeyboardActiveChanged: {
+                if (keyboardActive) {
+                    state = "visible";
+                } else {
+                    state = "hidden";
+                }
+            }
+        }
         RowLayout {
             id: footer
 
-            Layout.fillHeight: false
             Layout.alignment: Qt.AlignBottom
             Layout.bottomMargin: generalFontSize
+            Layout.fillHeight: false
             Layout.leftMargin: generalFontSize * 1.5
 
             SessionMenu {
                 id: sessionMenu
 
-                rootFontSize: root.generalFontSize
                 rootFontColor: root.generalFontColor
+                rootFontSize: root.generalFontSize
             }
         }
-
         Connections {
-            target: sddm
             function onLoginFailed() {
                 notificationMessage = textConstants.loginFailed;
                 notificationResetTimer.start();
             }
-        }
 
+            target: sddm
+        }
         Timer {
             id: notificationResetTimer
+
             interval: 3000
+
             onTriggered: notificationMessage = ""
         }
-
     }
 }

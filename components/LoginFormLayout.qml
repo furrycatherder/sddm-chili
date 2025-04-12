@@ -25,42 +25,38 @@ import QtQuick.Layouts 6.2
 Item {
     id: root
 
-    property alias userListModel: userListView.model
+    default property alias _children: innerLayout.children
     property alias actionItems: actionItemsLayout.children
-    property alias notificationMessage: notificationsLabel.text
-
     property alias faceSize: userListView.avatarSize
-    property alias usernameFontSize: userListView.rootFontSize
-    property alias usernameFontColor: userListView.rootFontColor
-
+    property alias notificationMessage: notificationsLabel.text
     property bool showUserList: true
     property alias userList: userListView
     property alias userListCurrentIndex: userListView.currentIndex
     property var userListCurrentModelData: userListView.currentItem === null ? [] : userListView.currentItem.m
-
-    default property alias _children: innerLayout.children
+    property alias userListModel: userListView.model
+    property alias usernameFontColor: userListView.rootFontColor
+    property alias usernameFontSize: userListView.rootFontSize
 
     UserList {
         id: userListView
-        
+
         visible: showUserList && y > 0
+
         anchors {
             bottom: parent.verticalCenter
             left: parent.left
             right: parent.right
         }
     }
-
     ColumnLayout {
         id: prompts
 
-        anchors.top: parent.verticalCenter
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.top: parent.verticalCenter
 
         ColumnLayout {
-
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
 
             ColumnLayout {
@@ -68,7 +64,6 @@ Item {
 
                 Layout.topMargin: faceSize * 0.5
             }
-
             Label {
                 id: notificationsLabel
 
@@ -82,17 +77,14 @@ Item {
                     OpacityAnimator {
                         duration: 100
                     }
-                }            
+                }
             }
-
         }
-
         RowLayout {
             id: actionItemsLayout
 
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: actionItemsLayout.height * 4
-
             spacing: usernameFontSize * 2
         }
     }

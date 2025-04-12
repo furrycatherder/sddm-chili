@@ -26,21 +26,25 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: wrapper
 
-    property bool isCurrent: true
+    property string avatarPath
     property bool constrainText: true
+    property real faceSize
+    property string iconSource
+    property bool isCurrent: true
+    readonly property var m: model
     property string name
     property string userName
-    property string avatarPath
-    property string iconSource
-    property int usernameFontSize
     property string usernameFontColor
-    
-    property real faceSize
-    
-    readonly property var m: model
-    
-    signal clicked()
+    property int usernameFontSize
 
+    signal clicked
+
+    function accessiblePressAction() {
+        wrapper.clicked();
+    }
+
+    Accessible.name: name
+    Accessible.role: Accessible.Button
     opacity: isCurrent ? 1.0 : 0.3
 
     Behavior on opacity {
@@ -51,57 +55,55 @@ Item {
 
     Item {
         id: imageSource
-        width: faceSize
-        height: faceSize
+
         anchors.horizontalCenter: parent.horizontalCenter
+        height: faceSize
+        width: faceSize
 
         // Image takes priority, taking a full path to a file, if that doesn't exist we show an icon
         Image {
             id: face
-            source: wrapper.avatarPath
-            sourceSize: Qt.size(faceSize, faceSize)
+
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             smooth: true
+            source: wrapper.avatarPath
+            sourceSize: Qt.size(faceSize, faceSize)
             visible: false
         }
         Image {
             id: mask
+
+            smooth: true
             source: "../assets/mask.svgz"
             sourceSize: Qt.size(faceSize, faceSize)
-            smooth: true
         }
         OpacityMask {
             anchors.fill: face
-            source: face
-            maskSource: mask
             cached: true
+            maskSource: mask
+            source: face
         }
     }
-
     Label {
         id: usernameLabel
 
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: imageSource.bottom
+        anchors.topMargin: usernameLabel.height / 1.2
         color: usernameFontColor
         font.capitalization: Font.Capitalize
         font.pointSize: Math.max(1, usernameFontSize * 1.2)
-        renderType: Text.QtRendering
-        anchors.top: imageSource.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: usernameLabel.height / 1.2
-        text: wrapper.name
-        horizontalAlignment: Text.AlignHCenter
         // Make an indication that this has active focus, this only happens when reached with keyboard navigation
         font.underline: wrapper.activeFocus
+        horizontalAlignment: Text.AlignHCenter
+        renderType: Text.QtRendering
+        text: wrapper.name
     }
-
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: wrapper.clicked();
-    }
 
-    Accessible.name: name
-    Accessible.role: Accessible.Button
-    function accessiblePressAction() { wrapper.clicked() }
+        onClicked: wrapper.clicked()
+    }
 }

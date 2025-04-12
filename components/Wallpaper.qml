@@ -23,31 +23,29 @@ import Qt5Compat.GraphicalEffects
 FocusScope {
     id: backgroundComponent
 
-    property alias imageSource: backgroundImage.source
     property bool configBlur: config.blur == "true"
+    property alias imageSource: backgroundImage.source
 
     Image {
         id: backgroundImage
 
         anchors.fill: parent
-        fillMode: Image.PreserveAspectCrop
-
         clip: true
+        fillMode: Image.PreserveAspectCrop
         focus: true
         smooth: true
     }
-
     RecursiveBlur {
         id: backgroundBlur
 
         anchors.fill: backgroundImage
-        source: backgroundImage
-        radius: configBlur ? config.recursiveBlurRadius : 0
         loops: configBlur ? config.recursiveBlurLoops : 0
+        radius: configBlur ? config.recursiveBlurRadius : 0
+        source: backgroundImage
     }
-
     MouseArea {
         anchors.fill: parent
+
         onClicked: container.focus = true
     }
 }

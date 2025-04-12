@@ -24,54 +24,55 @@ Button {
     id: root
 
     property int currentIndex: -1
-    property int rootFontSize
     property string rootFontColor
+    property int rootFontSize
 
+    flat: true
+    opacity: root.activeFocus ? 1 : 0.5
     visible: menu.count > 1
 
-    opacity: root.activeFocus ? 1 : 0.5
-    
-    flat: true
-    
-    contentItem: Label {
-        id: buttonLabel
-        color: rootFontColor
-        font.pointSize: rootFontSize
-        renderType: Text.QtRendering
-        text: instantiator.objectAt(currentIndex) ? instantiator.objectAt(currentIndex).text : ""
-        font.underline: root.activeFocus
-    }
-    
     background: Rectangle {
         color: "transparent"
     }
+    contentItem: Label {
+        id: buttonLabel
+
+        color: rootFontColor
+        font.pointSize: rootFontSize
+        font.underline: root.activeFocus
+        renderType: Text.QtRendering
+        text: instantiator.objectAt(currentIndex) ? instantiator.objectAt(currentIndex).text : ""
+    }
 
     Component.onCompleted: {
-        currentIndex = sessionModel.lastIndex
+        currentIndex = sessionModel.lastIndex;
     }
+    onClicked: menu.open()
 
     Menu {
         id: menu
-        
+
         y: parent.height
-        
+
         Instantiator {
             id: instantiator
-            model: sessionModel
-            delegate: MenuItem {
-                text: model.name
-                onTriggered: {
-                    root.currentIndex = model.index
-                }
-            }
+
             function onObjectAdded(index, object) {
                 menu.insertItem(index, object);
             }
             function onObjectRemoved(object) {
                 menu.removeItem(object);
             }
+
+            model: sessionModel
+
+            delegate: MenuItem {
+                text: model.name
+
+                onTriggered: {
+                    root.currentIndex = model.index;
+                }
+            }
         }
     }
-    
-    onClicked: menu.open()
 }
